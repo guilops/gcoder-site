@@ -27,7 +27,6 @@ jobs:
         env:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          NEON_AUTH_BASE_URL: ${{ vars.NEON_AUTH_BASE_URL }}
           WHATSAPP_NUMBER: ${{ vars.WHATSAPP_NUMBER }}
           CONTACT_EMAIL: ${{ vars.CONTACT_EMAIL }}
           INSTAGRAM_URL: ${{ vars.INSTAGRAM_URL }}

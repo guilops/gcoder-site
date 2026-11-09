@@ -4,14 +4,6 @@
   "scripts": {
     "build": "node scripts/generate-config.mjs",
     "build:course": "node scripts/build-course-pdf.mjs",
-    "build:pages": "npm run build && node scripts/prepare-pages.mjs && node scripts/bundle-auth.mjs"
-  },
-  "dependencies": {
-    "@neon/config": "^1.13.0",
-    "@neon/env": "^2.1.0",
-    "@neon/neon-js": "^0.10.2"
-  },
-  "devDependencies": {
-    "esbuild": "^0.28.2"
+    "build:pages": "npm run build && node scripts/prepare-pages.mjs"
   }
 }

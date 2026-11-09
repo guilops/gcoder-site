@@ -1,13 +1,12 @@
 window.GCODER_CONFIG = {
   "supabaseUrl": "",
   "supabaseAnonKey": "",
-  "neonAuthBaseUrl": "https://ep-curly-heart-bdr25fcc.neonauth.c-8.us-east-2.aws.neon.tech/neondb/auth",
-  "whatsappNumber": "5511954841299",
-  "contactEmail": "",
+  "whatsappNumber": "5511953687653",
+  "contactEmail": "guilhermelopes_dev@hotmail.com",
   "instagramUrl": "",
-  "githubUrl": "",
-  "serviceArea": "São Paulo e região",
+  "githubUrl": "https://github.com/guilops",
+  "serviceArea": "",
   "hotmartLogicUrl": "https://go.hotmart.com/J79485536F",
-  "businessName": "La Docura Confeitaria Gourmet",
-  "businessTagline": "DOCES FEITOS COM CARINHO"
+  "businessName": "Gcoder",
+  "businessTagline": "TECNOLOGIA SEM COMPLICAÇÃO"
 };

@@ -9,7 +9,7 @@ await Promise.all([
   mkdir(new URL("gestao/", output), { recursive: true }),
 ]);
 
-for (const file of ["index.html", "auth.html", "style.css", "script.js", "shop.js", "config.js", "CNAME"]) {
+for (const file of ["index.html", "style.css", "script.js", "config.js", "CNAME", "sw.js"]) {
   await cp(new URL(file, root), new URL(file, output));
 }
 await cp(new URL("assets/logos/", root), new URL("assets/logos/", output), { recursive: true });

@@ -1,4 +1,4 @@
-﻿import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,7 +6,6 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 const allowedServices = new Set([
-  "Encomenda para festa",
   "Criação de sites",
   "Formatação de computadores",
   "Limpeza e remoção de vírus",
@@ -53,7 +52,7 @@ Deno.serve(async (request) => {
   try {
     body = await request.json();
   } catch {
-    return jsonResponse({ error: "Não foi possível ler o pedido de encomenda." }, 400);
+    return jsonResponse({ error: "Não foi possível ler o pedido de agendamento." }, 400);
   }
 
   if (body.website) return jsonResponse({ error: "Não foi possível validar o pedido." }, 400);
@@ -69,8 +68,7 @@ Deno.serve(async (request) => {
     phone.replace(/\D/g, "").length < 10 || phone.length > 30 ||
     email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
     !allowedServices.has(service) || details.length > 1200 ||
-    !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
-    !(service === "Encomenda para festa" ? isValidEventTime(time) : isValidSlot(time))
+    !/^\d{4}-\d{2}-\d{2}$/.test(date) || !isValidSlot(time)
   ) {
     return jsonResponse({ error: "Confira os dados e o horário escolhido e tente novamente." }, 400);
   }
@@ -92,7 +90,7 @@ Deno.serve(async (request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const resendKey = Deno.env.get("RESEND_API_KEY");
   const adminEmail = Deno.env.get("ADMIN_EMAIL");
-  const businessName = Deno.env.get("BUSINESS_NAME") || "La Docura Confeitaria Gourmet";
+  const businessName = Deno.env.get("BUSINESS_NAME") || "Gcoder";
   const emailFromSetting = normalizeEmailFrom(Deno.env.get("EMAIL_FROM"));
   const emailFrom = emailFromSetting.value;
   if (!supabaseUrl || !serviceKey) {
@@ -101,16 +99,6 @@ Deno.serve(async (request) => {
   }
 
   const client = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
-  const { data: bakerySettings, error: settingsError } = await client.from("bakery_settings")
-    .select("min_order_days").eq("id", 1).maybeSingle();
-  if (settingsError || !bakerySettings) {
-    console.error("Failed to retrieve bakery order settings:", settingsError?.message || "No settings were returned.");
-    return jsonResponse({ error: "NÃ£o foi possÃ­vel verificar o prazo para encomendas." }, 500);
-  }
-  const orderLeadDays = Math.floor((Date.parse(`${date}T12:00:00Z`) - Date.parse(`${brazilToday()}T12:00:00Z`)) / 86400000);
-  if (orderLeadDays < bakerySettings.min_order_days) {
-    return jsonResponse({ error: `As encomendas precisam ser feitas com pelo menos ${bakerySettings.min_order_days} dias de antecedÃªncia.` }, 400);
-  }
   const { data: serviceDuration, error: durationError } = await client.from("service_durations")
     .select("duration_minutes")
     .eq("service", service)
@@ -194,8 +182,8 @@ Deno.serve(async (request) => {
   const adminMessage = {
     from: emailFrom || "",
     to: adminEmail ? [adminEmail] : [],
-    subject: `Nova encomenda — ${name}`,
-    html: `<h2>Nova encomenda — ${escapeHtml(businessName)}</h2><p><strong>Cliente:</strong> ${safeName}</p><p><strong>Telefone:</strong> ${safePhone} (<a href="https://wa.me/${whatsapp}">conversar no WhatsApp</a>)</p><p><strong>E-mail:</strong> ${escapeHtml(email)}</p><p><strong>Serviço:</strong> ${safeService} (${formatDuration(durationMinutes)})</p><p><strong>Data:</strong> ${dateLabel} às ${time}</p><p><strong>Detalhes:</strong> ${safeDetails}</p><p>Acesse o painel da ${escapeHtml(businessName)} para confirmar ou ajustar este pedido.</p>`,
+    subject: `Novo pedido de atendimento — ${name}`,
+    html: `<h2>Novo pedido de atendimento — ${escapeHtml(businessName)}</h2><p><strong>Cliente:</strong> ${safeName}</p><p><strong>Telefone:</strong> ${safePhone} (<a href="https://wa.me/${whatsapp}">conversar no WhatsApp</a>)</p><p><strong>E-mail:</strong> ${escapeHtml(email)}</p><p><strong>Serviço:</strong> ${safeService} (${formatDuration(durationMinutes)})</p><p><strong>Data:</strong> ${dateLabel} às ${time}</p><p><strong>Detalhes:</strong> ${safeDetails}</p><p>Acesse o painel da ${escapeHtml(businessName)} para confirmar ou ajustar este pedido.</p>`,
   };
   const customerMessage = {
     from: emailFrom || "",
@@ -342,10 +330,6 @@ function isValidSlot(value: string) {
   return minutes <= 16 * 60 + 30;
 }
 
-function isValidEventTime(value: string) {
-  return /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value);
-}
-
 function brazilCurrentTime() {
   return new Intl.DateTimeFormat("en-GB", {
     timeZone: "America/Sao_Paulo",
@@ -362,4 +346,3 @@ function brazilDateRange() {
   lastDay.setUTCDate(lastDay.getUTCDate() + 90);
   return { localToday, lastDay };
 }
-

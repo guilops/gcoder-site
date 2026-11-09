@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 const config = window.GCODER_CONFIG || {};
 const supabaseReady = Boolean(
@@ -416,9 +416,9 @@ function renderBookingList() {
     select.className = "status-select";
     select.setAttribute("aria-label", `Alterar status do agendamento de ${booking.customer_name}`);
     for (const [value, label] of [
-      ["pending", "Pedido recebido"],
+      ["pending", "Aguardando"],
       ["confirmed", "Confirmado"],
-      ["completed", "Entregue"],
+      ["completed", "Concluído"],
       ["cancelled", "Cancelado"],
     ]) {
       select.add(new Option(label, value, false, booking.status === value));
@@ -679,9 +679,9 @@ async function removeScheduleBlock(id) {
 
 function statusLabel(status) {
   return {
-    pending: "Pedido recebido",
+    pending: "Aguardando confirmação",
     confirmed: "Confirmado",
-    completed: "Entregue",
+    completed: "Concluído",
     cancelled: "Cancelado",
   }[status] || "Status desconhecido";
 }
@@ -780,11 +780,6 @@ async function refreshDashboard() {
       .find((element) => element.dataset.durationService === duration.service);
     if (input) input.value = String(duration.duration_minutes);
   }
-  const leadResult = await db.from("bakery_settings").select("min_order_days").eq("id", 1).maybeSingle();
-  if (!leadResult.error && leadResult.data) {
-    const leadInput = document.querySelector("#min-order-days");
-    if (leadInput) leadInput.value = String(leadResult.data.min_order_days);
-  }
   const activeBookings = activeResult.data.filter((booking) => booking.status !== "cancelled");
   document.querySelector("#today-count").textContent =
     activeBookings.filter((booking) => booking.booking_date === today).length;
@@ -821,7 +816,7 @@ async function authorizeAdmin(session) {
     if (error) {
       setFeedback(loginFeedback, `Não foi possível verificar a permissão: ${error.message}`);
     } else {
-      setFeedback(loginFeedback, "Esta conta não tem acesso ao painel da La Docura.");
+      setFeedback(loginFeedback, "Esta conta não tem acesso ao painel da Gcoder.");
     }
     await db.auth.signOut();
     return;
@@ -928,27 +923,9 @@ document.querySelector("#block-time-button")?.addEventListener("click", () => {
 document.querySelector("#save-durations-button")?.addEventListener("click", (event) => {
   void saveServiceDurations(event.currentTarget);
 });
-document.querySelector("#save-lead-time-button")?.addEventListener("click", async (event) => {
-  const input = document.querySelector("#min-order-days");
-  const feedback = document.querySelector("#lead-time-feedback");
-  const days = Number(input?.value);
-  if (!Number.isInteger(days) || days < 1 || days > 60) {
-    setFeedback(feedback, "Informe um prazo entre 1 e 60 dias.");
-    return;
-  }
-  event.currentTarget.disabled = true;
-  const { error } = await db.from("bakery_settings").update({ min_order_days: days, updated_at: new Date().toISOString() }).eq("id", 1);
-  event.currentTarget.disabled = false;
-  if (error) {
-    setFeedback(feedback, `Não foi possível salvar. Aplique supabase/bakery-settings.sql. ${error.message}`);
-    return;
-  }
-  setFeedback(feedback, `Prazo atualizado: ${days} ${days === 1 ? "dia" : "dias"} de antecedência.`, true);
-});
 setupContactLinks();
 removeLegacyMonetagServiceWorker();
 setupCourseCheckout();
 setupHeroCarousel();
 window.addEventListener("hashchange", routeToAdmin);
 routeToAdmin();
-
