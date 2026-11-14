@@ -185,23 +185,7 @@ function setupContactForm() {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(contactForm).entries());
     if (!db) {
-      const contactEmail = (config.contactEmail || "").trim();
-      if (!contactEmail) {
-        setFeedback(contactFeedback, "O formulário ainda não está configurado. Fale com a Gcoder pelo WhatsApp ou Instagram.");
-        return;
-      }
-
-      const emailBody = [
-        `Nome: ${data.name}`,
-        `E-mail: ${data.email}`,
-        `WhatsApp: ${data.phone || "Não informado"}`,
-        `Assunto: ${data.subject}`,
-        "",
-        "Como podemos ajudar?",
-        data.details,
-      ].join("\n");
-      window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(`[Gcoder] ${data.subject}`)}&body=${encodeURIComponent(emailBody)}`;
-      setFeedback(contactFeedback, "Seu aplicativo de e-mail deve abrir com a mensagem pronta para revisão e envio.", true);
+      setFeedback(contactFeedback, "O envio direto ainda não está configurado. Fale com a Gcoder pelo WhatsApp ou Instagram.");
       return;
     }
 

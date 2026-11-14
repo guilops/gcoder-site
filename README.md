@@ -36,6 +36,8 @@ São SVGs vetoriais: podem ser redimensionados para impressão sem perder defini
 
    O comando grava os valores públicos em `config.js`. A URL e a chave pública do Supabase devem ser informadas juntas; sem elas, os links de contato continuam funcionando, mas a agenda fica desativada. Depois de alterar `.env`, rode novamente o build.
 
+   Para o GitHub Pages, cadastre `SUPABASE_URL` e `SUPABASE_ANON_KEY` em **Settings → Secrets and variables → Actions → Variables** do repositório. O workflow `pages.yml` usa essas variáveis no build; sem as duas, o formulário informa que o envio direto não está configurado. Cadastre também ali as demais variáveis públicas que quiser personalizar, como `WHATSAPP_NUMBER` e `CONTACT_EMAIL`.
+
 **Nunca** coloque `SUPABASE_SERVICE_ROLE_KEY`, chave do Resend ou outra credencial privada no `.env` que alimenta o site, em `config.js` ou em qualquer arquivo publicado. O endereço de WhatsApp deve conter o código do país e da região, só com números. Instagram deve ser a URL completa do perfil. `.env` está ignorado pelo Git.
 
 ## Supabase e agenda
@@ -71,6 +73,8 @@ O painel privado em `/gestao/` preserva o calendário interno: login, consulta d
    ```powershell
    npx supabase functions deploy contact-message --no-verify-jwt
    ```
+
+   Depois de cadastrar as variáveis públicas no GitHub e publicar a função com os segredos do Resend no Supabase, execute novamente o workflow **Publish Gcoder site to GitHub Pages**. `CONTACT_EMAIL` só configura os links de e-mail do site; o destinatário do formulário é `ADMIN_EMAIL`, configurado como segredo no Supabase.
 
 6. Se ainda for usar os endpoints de disponibilidade da agenda, publique as funções no projeto Gcoder:
 
